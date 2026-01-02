@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000", // dev
-      "https://zerodha-clone-bwlg.onrender.com", // deployed dashboard
+      "https://zerodha-clone-dashboard-v3my.onrender.com", // deployed dashboard
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,

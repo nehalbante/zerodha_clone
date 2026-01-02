@@ -41,10 +41,10 @@ const Login = () => {
       const { success, message } = data;
       if (success) {
         handleSuccess(message);
-        navigate("/*");
-        // setTimeout(() => {
-        //   navigate("/");
-        // }, 1000);
+        // navigate("/*");
+        setTimeout(() => {
+          navigate("/*");
+        }, 1000);
       } else {
         handleError(message);
       }

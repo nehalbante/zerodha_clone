@@ -12,8 +12,9 @@ module.exports.Signup = async (req, res, next) => {
     const user = await User.create({ email, password, username, createdAt });
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
-      withCredentials: true,
-      httpOnly: false,
+      httpOnly: true, // 🔒 security
+      secure: true, // ✅ REQUIRED on HTTPS (Render)
+      sameSite: "None", // ✅ REQUIRED for cross-site cookies
     });
     res
       .status(201)
@@ -24,29 +25,31 @@ module.exports.Signup = async (req, res, next) => {
   }
 };
 
-
 module.exports.Login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if(!email || !password ){
-      return res.json({message:'All fields are required'})
+    if (!email || !password) {
+      return res.json({ message: "All fields are required" });
     }
     const user = await User.findOne({ email });
-    if(!user){
-      return res.json({message:'Incorrect password or email' }) 
+    if (!user) {
+      return res.json({ message: "Incorrect password or email" });
     }
-    const auth = await bcrypt.compare(password,user.password)
+    const auth = await bcrypt.compare(password, user.password);
     if (!auth) {
-      return res.json({message:'Incorrect password or email' }) 
+      return res.json({ message: "Incorrect password or email" });
     }
-     const token = createSecretToken(user._id);
-     res.cookie("token", token, {
-       withCredentials: true,
-       httpOnly: false,
-     });
-     res.status(201).json({ message: "User logged in successfully", success: true });
-     next()
+    const token = createSecretToken(user._id);
+    res.cookie("token", token, {
+      httpOnly: true, // 🔒 security
+      secure: true, // ✅ REQUIRED on HTTPS (Render)
+      sameSite: "None", // ✅ REQUIRED for cross-site cookies
+    });
+    res
+      .status(201)
+      .json({ message: "User logged in successfully", success: true });
+    next();
   } catch (error) {
     console.error(error);
   }
-}
+};
