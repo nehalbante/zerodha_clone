@@ -19,7 +19,7 @@ const Home = () => {
         navigate("/");
       }
       const { data } = await axios.post(
-        "http://localhost:3002/api/auth/verify",
+        "https://zerodha-clone-bwlg.onrender.com/api/auth/verify",
         {},
         { withCredentials: true }
       );
