@@ -1,0 +1,175 @@
+import React, { useState, useContext } from "react";
+import GeneralContext from "./GeneralContext";
+
+import { Tooltip, Grow } from "@mui/material";
+import { watchlist } from "../data/data";
+import {
+  BarChartOutlined,
+  Dataset,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  Label,
+  MoreHoriz,
+} from "@mui/icons-material";
+import { Doughnutchart } from "./Doughnutchart";
+
+const labels=watchlist.map((subarray)=>subarray["name"])
+
+
+const WatchList = () => {
+
+ const data = {
+  labels: watchlist.map((item) => item.name), // ✅ correct key
+  datasets: [
+    {
+      label: "Price",
+      data: watchlist.map((stock) => stock.price),
+      backgroundColor: [
+        "rgba(255, 99, 132, 0.5)",
+        "rgba(54, 162, 235, 0.5)",
+        "rgba(255, 206, 86, 0.5)",
+        "rgba(75, 192, 192, 0.5)",
+        "rgba(153, 102, 255, 0.5)",
+        "rgba(255, 159, 64, 0.5)",
+      ],
+      borderColor: [
+        "rgba(255, 99, 132, 1)",
+        "rgba(54, 162, 235, 1)",
+        "rgba(255, 206, 86, 1)",
+        "rgba(75, 192, 192, 1)",
+        "rgba(153, 102, 255, 1)",
+        "rgba(255, 159, 64, 1)",
+      ],
+      borderWidth: 1,
+    },
+  ],
+};
+
+// export const data = {
+//   labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+//   datasets: [
+    // {
+    //   label: '# of Votes',
+    //   data: [12, 19, 3, 5, 2, 3],
+    //   backgroundColor: [
+    //     'rgba(255, 99, 132, 0.2)',
+    //     'rgba(54, 162, 235, 0.2)',
+    //     'rgba(255, 206, 86, 0.2)',
+    //     'rgba(75, 192, 192, 0.2)',
+    //     'rgba(153, 102, 255, 0.2)',
+    //     'rgba(255, 159, 64, 0.2)',
+    //   ],
+    //   borderColor: [
+    //     'rgba(255, 99, 132, 1)',
+    //     'rgba(54, 162, 235, 1)',
+    //     'rgba(255, 206, 86, 1)',
+    //     'rgba(75, 192, 192, 1)',
+    //     'rgba(153, 102, 255, 1)',
+    //     'rgba(255, 159, 64, 1)',
+    //   ],
+    //   borderWidth: 1,
+    // },
+//   ],
+// };
+
+
+  return (
+    <div className="watchlist-container">
+      <div className="search-container">
+        <input
+          type="text"
+          name="search"
+          id="search"
+          placeholder="Search eg:infy, bse, nifty fut weekly, gold mcx"
+          className="search"
+        />
+        <span className="counts"> {watchlist.length} / 50</span>
+      </div>
+
+      <ul className="list">
+        {watchlist.map((stock, index) => {
+          return <Watchlistitem stock={stock} key={index} />;
+        })}
+      </ul>
+      <Doughnutchart data={data}/>
+    </div>
+  );
+};
+
+const Watchlistitem = ({ stock }) => {
+  const [showwatchlistitem, setshowwatchlistitem] = useState(false);
+  const handlemouseenter = (e) => {
+    setshowwatchlistitem(true);
+  };
+  const handlemouseexit = (e) => {
+    setshowwatchlistitem(false);
+  };
+  return (
+    <li onMouseEnter={handlemouseenter} onMouseLeave={handlemouseexit}>
+      <div className="item">
+        <p className={stock.isDown ? "down" : "up"}>{stock.name}</p>
+        <div className="itemInfo">
+          <span className="percent">{stock.percent}</span>
+          {stock.isDown ? (
+            <KeyboardArrowDown className="down" />
+          ) : (
+            <KeyboardArrowUp className="down" />
+          )}
+          <span className="price">{stock.price}</span>
+        </div>
+      </div>
+      {showwatchlistitem && <Watchlistactions uid={stock.name} />}
+    </li>
+  );
+};
+
+const Watchlistactions = ({ uid }) => {
+  const generalContext = useContext(GeneralContext);
+
+  const handleBuyClick = () => {
+    generalContext.openBuyWindow(uid);
+  };
+  const handleSellClick = () => {
+    generalContext.openSellWindow(uid);
+  };
+
+  return (
+    <span className="actions">
+      <Tooltip
+        title="Buy (B)"
+        placement="top"
+        arrow
+        TransitionComponent={Grow}
+        onClick={handleBuyClick}
+      >
+        <button className="buy">Buy</button>
+      </Tooltip>
+      <Tooltip
+        title="Sell (S)"
+        placement="top"
+        arrow
+        TransitionComponent={Grow}
+        onClick={handleSellClick}
+      >
+        <button className="sell">Sell</button>
+      </Tooltip>
+      <Tooltip
+        title="Analytics (A)"
+        placement="top"
+        arrow
+        TransitionComponent={Grow}
+      >
+        <button className="action ">
+          <BarChartOutlined className="icon" />
+        </button>
+      </Tooltip>
+      <Tooltip title="More" placement="top" arrow TransitionComponent={Grow}>
+        <button className="action ">
+          <MoreHoriz className="icon" />
+        </button>
+      </Tooltip>
+    </span>
+  );
+};
+
+export default WatchList;
